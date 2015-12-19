@@ -9,6 +9,7 @@ import java.util.List;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
+import javax.swing.ListModel;
 
 import logic.FileLoader;
 import logic.MachineFile;
@@ -29,6 +30,8 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 		this.fileLoader = loader;
 
 		lines = new JList<>();
+		lines.setListData(new String[] { "Double click to load file" });
+		// file numbers in differentLines are highlighted red
 		lines.setCellRenderer(new DefaultListCellRenderer() {
 
 			@Override
@@ -37,7 +40,11 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 
 				super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 				if (differentLines != null && differentLines.contains(index)) {
-					setBackground(Color.RED);
+					if (isSelected) {
+						setBackground(Color.ORANGE);
+					} else {
+						setBackground(Color.RED);
+					}
 				}
 
 				return this;
@@ -52,6 +59,11 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 		this.linkedPanel = linkedPanel;
 	}
 
+	/**
+	 * Sets this file's contents to the given array
+	 * 
+	 * @param linesArr
+	 */
 	public void setContents(String[] linesArr) {
 		if (linesArr == null)
 			return;
@@ -61,6 +73,9 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 		linkedPanel.updateCompare();
 	}
 
+	/**
+	 * Updates the comparison data with the linked panel
+	 */
 	private void updateCompare() {
 		if (linkedPanel == null || linkedPanel.machineFile == null || machineFile == null)
 			return;
@@ -71,6 +86,49 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 
 	public int getSelectedIndex() {
 		return lines.getSelectedIndex();
+	}
+
+	public String getSelectedValue() {
+		return lines.getSelectedValue();
+	}
+
+	/**
+	 * Sets a single row of the data
+	 * 
+	 * @param index
+	 * @param value
+	 */
+	public void setValue(int index, String value) {
+		ListModel<String> model = lines.getModel();
+
+		if (index < 0 || index >= model.getSize())
+			return;
+
+		String[] lineArr = new String[model.getSize()];
+		for (int i = 0; i < model.getSize(); i++) {
+			lineArr[i] = model.getElementAt(i);
+		}
+
+		lineArr[index] = value;
+		setContents(lineArr);
+	}
+
+	public void removeLine(int index) {
+		ListModel<String> model = lines.getModel();
+
+		if (index < 0 || index >= model.getSize())
+			return;
+
+		String[] lineArr = new String[model.getSize() - 1];
+		for (int i = 0; i < lineArr.length; i++) {
+			if (i < index) {
+				lineArr[i] = model.getElementAt(i);
+			} else {
+				lineArr[i] = model.getElementAt(i+1);
+			}
+		}
+
+		setContents(lineArr);
 	}
 
 	@Override
