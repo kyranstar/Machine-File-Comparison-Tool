@@ -124,11 +124,20 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 			if (i < index) {
 				lineArr[i] = model.getElementAt(i);
 			} else {
-				lineArr[i] = model.getElementAt(i+1);
+				lineArr[i] = model.getElementAt(i + 1);
 			}
 		}
 
 		setContents(lineArr);
+	}
+
+	public String getFullText() {
+		ListModel<String> model = lines.getModel();
+		StringBuilder text = new StringBuilder();
+		for (int i = 0; i < model.getSize(); i++) {
+			text.append(model.getElementAt(i)).append('\n');
+		}
+		return text.toString();
 	}
 
 	@Override

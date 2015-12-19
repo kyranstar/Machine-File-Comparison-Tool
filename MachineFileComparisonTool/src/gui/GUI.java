@@ -29,9 +29,17 @@ public class GUI extends JPanel{
 		rightFile = new MachineFilePanel(fileLoader);
 		addDeleteBind();
 		
-		
 		leftFile.setLinkedPanel(rightFile);
 		rightFile.setLinkedPanel(leftFile);
+		
+		setLayout(new BorderLayout());
+		JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftFile, rightFile);
+		split.setResizeWeight(.5f);
+		JSplitPane upDownSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, createToolbar(), split);
+		add(BorderLayout.CENTER, upDownSplit);
+	}
+
+	private JPanel createToolbar() {
 		JButton undoButton = new JButton("Undo");
 		JButton carryOverButton = new JButton("Carry over");
 		carryOverButton.addActionListener(new ActionListener(){
@@ -39,18 +47,19 @@ public class GUI extends JPanel{
 			public void actionPerformed(ActionEvent e) {
 				rightFile.setValue(rightFile.getSelectedIndex(), leftFile.getSelectedValue());
 			}});
-		JButton saveButton = new JButton("Save");
+		final JButton saveButton = new JButton("Save");
+		saveButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				fileLoader.pickFileAndSave(rightFile.getFullText(), saveButton);
+			}
+		});
 		JPanel toolbar = new JPanel();
 		toolbar.setLayout(new BorderLayout());
 		toolbar.add(BorderLayout.WEST, undoButton);
 		toolbar.add(BorderLayout.CENTER, carryOverButton);
 		toolbar.add(BorderLayout.EAST, saveButton);
-
-		setLayout(new BorderLayout());
-		JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftFile, rightFile);
-		split.setResizeWeight(.5f);
-		JSplitPane upDownSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, toolbar, split);
-		add(BorderLayout.CENTER, upDownSplit);
+		return toolbar;
 	}
 
 	private void addDeleteBind() {

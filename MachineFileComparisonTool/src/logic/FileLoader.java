@@ -2,7 +2,9 @@ package logic;
 
 import java.awt.Component;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.function.IntFunction;
 import java.util.stream.Stream;
@@ -12,6 +14,7 @@ import javax.swing.JOptionPane;
 
 /**
  * Loads files and stores the location the file was retrieved from.
+ * 
  * @author Kyran Adams
  *
  */
@@ -19,16 +22,39 @@ public class FileLoader {
 	private File lastLocation = null;
 
 	public String[] pickFileAndGetLines(Component parent) {
+		File file = pickFile(parent);
+		if (file == null)
+			return null;
+		return readLines(parent, file);
+
+	}
+	public void pickFileAndSave(String data, Component parent) {
+		File file = pickFile(parent);
+		if (file == null)
+			return;
+		saveFile(data, file);
+	}
+
+	private File pickFile(Component parent) {
 		JFileChooser fc = new JFileChooser(lastLocation);
 		fc.showOpenDialog(parent);
 		File file = fc.getSelectedFile();
-		if (file == null){
+		if (file == null) {
 			return null;
 		}
 		// store location
 		lastLocation = file;
-		return readLines(parent, file);
+		return file;
+	}
 
+	private void saveFile(String data, File file) {
+		try {
+			PrintWriter out = new PrintWriter(file);
+			out.write(data);
+			out.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private String[] readLines(Component parent, File file) {
