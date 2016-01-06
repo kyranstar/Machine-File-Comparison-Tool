@@ -40,7 +40,6 @@ public class GUI extends JPanel{
 	}
 
 	private JPanel createToolbar() {
-		JButton undoButton = new JButton("Undo");
 		JButton carryOverButton = new JButton("Carry over");
 		carryOverButton.addActionListener(new ActionListener(){
 			@Override
@@ -56,7 +55,6 @@ public class GUI extends JPanel{
 		});
 		JPanel toolbar = new JPanel();
 		toolbar.setLayout(new BorderLayout());
-		toolbar.add(BorderLayout.WEST, undoButton);
 		toolbar.add(BorderLayout.CENTER, carryOverButton);
 		toolbar.add(BorderLayout.EAST, saveButton);
 		return toolbar;
