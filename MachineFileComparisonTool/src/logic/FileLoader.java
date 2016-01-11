@@ -19,7 +19,9 @@ import javax.swing.JOptionPane;
  *
  */
 public class FileLoader {
-	private File lastLocation = null;
+	private static final String DEFAULT_LOCATION = "C:\\AH700";
+	
+	private File lastLocation = new File(DEFAULT_LOCATION);
 
 	public String[] pickFileAndGetLines(Component parent) {
 		File file = pickFile(parent);
