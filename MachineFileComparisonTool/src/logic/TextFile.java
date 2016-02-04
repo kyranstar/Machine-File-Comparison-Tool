@@ -32,4 +32,8 @@ public class TextFile {
 	public String getFilepath() {
 		return filepath;
 	}
+
+	public int getLength() {
+		return contents.length;
+	}
 }

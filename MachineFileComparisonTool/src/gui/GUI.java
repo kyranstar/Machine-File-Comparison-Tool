@@ -31,16 +31,23 @@ public class GUI extends JPanel {
 		leftTitle.setToolTipText("No file loaded");
 		JLabel rightTitle = new JLabel(" ");
 		rightTitle.setToolTipText("No file loaded");
+		JLabel leftFileLength = new JLabel(" ");
+		JLabel rightFileLength = new JLabel(" ");
 
-		leftFile = new MachineFilePanel(fileLoader, leftTitle);
-		rightFile = new MachineFilePanel(fileLoader, rightTitle);
+		leftFile = new MachineFilePanel(fileLoader, leftTitle, leftFileLength);
+		rightFile = new MachineFilePanel(fileLoader, rightTitle, rightFileLength);
 		addDeleteBind();
 
 		leftFile.setLinkedPanel(rightFile);
 		rightFile.setLinkedPanel(leftFile);
 
-		JSplitPane leftTitleFileSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, leftTitle, leftFile);
-		JSplitPane rightTitleFileSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, rightTitle, rightFile);
+		JSplitPane leftTitleFileLength = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftTitle, leftFileLength);
+		leftTitleFileLength.setResizeWeight(.9);
+		JSplitPane rightTitleFileLength = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, rightTitle, rightFileLength);
+		rightTitleFileLength.setResizeWeight(.9);
+		
+		JSplitPane leftTitleFileSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, leftTitleFileLength, leftFile);
+		JSplitPane rightTitleFileSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, rightTitleFileLength, rightFile);
 
 		setLayout(new BorderLayout());
 		JSplitPane panelSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftTitleFileSplit, rightTitleFileSplit);
@@ -78,7 +85,9 @@ public class GUI extends JPanel {
 		rightFile.getActionMap().put(DELETE_ACTION_MAP_KEY, new AbstractAction() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				System.out.println(rightFile.getSelectedIndex());
 				rightFile.removeLine(rightFile.getSelectedIndex());
+				System.out.println(rightFile.getSelectedIndex());
 			}
 		});
 	}

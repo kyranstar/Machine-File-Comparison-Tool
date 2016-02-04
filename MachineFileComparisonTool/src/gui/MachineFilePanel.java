@@ -28,12 +28,15 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 	private List<Integer> differentLines;
 	// change this title whenever loading a file
 	private JLabel title;
+	// change this title whenever file length changes
+	private JLabel fileLength;
 
-	public MachineFilePanel(FileLoader loader, JLabel title) {
+	public MachineFilePanel(FileLoader loader, JLabel title, JLabel fileLength) {
 		super(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		this.fileLoader = loader;
 		this.title = title;
-
+		this.fileLength = fileLength;
+		
 		lines = new JList<>();
 		lines.setListData(new String[] { "Double click to load file" });
 		// file numbers in differentLines are highlighted red
@@ -76,6 +79,7 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 		machineFile = new MachineFile(linesArr);
 		updateCompare();
 		linkedPanel.updateCompare();
+		fileLength.setText(String.valueOf(linesArr.length));
 	}
 
 	/**
@@ -116,9 +120,11 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 
 		lineArr[index] = value;
 		setContents(lineArr);
+		fileLength.setText(String.valueOf(lineArr.length));
 	}
 
 	public void removeLine(int index) {
+		int selectedIndex = getSelectedIndex();
 		ListModel<String> model = lines.getModel();
 
 		if (index < 0 || index >= model.getSize())
@@ -134,6 +140,8 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 		}
 
 		setContents(lineArr);
+		fileLength.setText(String.valueOf(lineArr.length));
+		if(selectedIndex < lineArr.length) lines.setSelectedIndex(selectedIndex);
 	}
 
 	public String getFullText() {
@@ -155,6 +163,7 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 			setContents(file.getContents());
 			title.setToolTipText(file.getFilepath());
 			title.setText(file.getTitle());
+			fileLength.setText(String.valueOf(file.getLength()));
 		}
 	}
 
