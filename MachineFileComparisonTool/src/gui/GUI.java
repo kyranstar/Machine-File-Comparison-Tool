@@ -28,7 +28,9 @@ public class GUI extends JPanel {
 		// spaces are set as default so the title automatically has space in the
 		// layout
 		JLabel leftTitle = new JLabel(" ");
+		leftTitle.setToolTipText("No file loaded");
 		JLabel rightTitle = new JLabel(" ");
+		rightTitle.setToolTipText("No file loaded");
 
 		leftFile = new MachineFilePanel(fileLoader, leftTitle);
 		rightFile = new MachineFilePanel(fileLoader, rightTitle);

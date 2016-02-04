@@ -29,7 +29,7 @@ public class FileLoader {
 			return null;
 		}
 		String[] lines = readLines(parent, file);
-		return new TextFile(file.getName(), lines);
+		return new TextFile(file, lines);
 	}
 	public void pickFileAndSave(String data, Component parent) {
 		File file = pickFile(parent);

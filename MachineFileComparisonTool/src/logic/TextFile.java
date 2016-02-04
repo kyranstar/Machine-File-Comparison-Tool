@@ -1,13 +1,16 @@
 package logic;
 
+import java.io.File;
 import java.util.Arrays;
 
 public class TextFile {
 	private final String title;
+	private final String filepath;
 	private final String[] contents;
 
-	public TextFile(String title, String[] contents) {
-		this.title = title;
+	public TextFile(File f, String[] contents) {
+		this.title = f.getName();
+		this.filepath = f.getAbsolutePath();
 		this.contents = contents;
 	}
 
@@ -24,5 +27,9 @@ public class TextFile {
 			return null;
 		}
 		return Arrays.copyOf(contents, contents.length);
+	}
+
+	public String getFilepath() {
+		return filepath;
 	}
 }

@@ -153,6 +153,7 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 				return;
 			}
 			setContents(file.getContents());
+			title.setToolTipText(file.getFilepath());
 			title.setText(file.getTitle());
 		}
 	}
