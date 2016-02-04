@@ -7,12 +7,14 @@ import java.awt.event.MouseListener;
 import java.util.List;
 
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.ListModel;
 
 import logic.FileLoader;
 import logic.MachineFile;
+import logic.TextFile;
 
 @SuppressWarnings("serial")
 public class MachineFilePanel extends JScrollPane implements MouseListener {
@@ -24,10 +26,13 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 	private MachineFilePanel linkedPanel;
 
 	private List<Integer> differentLines;
+	// change this title whenever loading a file
+	private JLabel title;
 
-	public MachineFilePanel(FileLoader loader) {
+	public MachineFilePanel(FileLoader loader, JLabel title) {
 		super(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		this.fileLoader = loader;
+		this.title = title;
 
 		lines = new JList<>();
 		lines.setListData(new String[] { "Double click to load file" });
@@ -143,7 +148,12 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if (e.getClickCount() >= 2) {
-			setContents(fileLoader.pickFileAndGetLines(this));
+			TextFile file = fileLoader.pickFileAndGetLines(this);
+			if (file == null || file.getContents() == null || file.getTitle() == null) {
+				return;
+			}
+			setContents(file.getContents());
+			title.setText(file.getTitle());
 		}
 	}
 

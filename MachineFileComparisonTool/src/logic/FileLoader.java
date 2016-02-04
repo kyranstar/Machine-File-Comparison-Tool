@@ -21,12 +21,13 @@ import javax.swing.JOptionPane;
 public class FileLoader {
 	private File lastLocation = null;
 
-	public String[] pickFileAndGetLines(Component parent) {
+	public TextFile pickFileAndGetLines(Component parent) {
 		File file = pickFile(parent);
-		if (file == null)
+		if (file == null){
 			return null;
-		return readLines(parent, file);
-
+		}
+		String[] lines = readLines(parent, file);
+		return new TextFile(file.getName(), lines);
 	}
 	public void pickFileAndSave(String data, Component parent) {
 		File file = pickFile(parent);
