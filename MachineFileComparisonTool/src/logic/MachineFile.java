@@ -15,7 +15,7 @@ public class MachineFile {
 		List<Integer> differentLines = new ArrayList<>();
 		int end = Math.min(getLineCount(), other.getLineCount());
 		for (int i = 0; i < end; i++) {
-			if (!other.getLine(i).equals(getLine(i))) {
+			if (!linesEqual(getLine(i), other.getLine(i))) {
 				differentLines.add(i);
 			}
 		}
@@ -28,6 +28,30 @@ public class MachineFile {
 		}
 
 		return differentLines;
+	}
+
+	/**
+	 * Checks whether two lines are "equal." It must account for slightly
+	 * different spacing.
+	 * 
+	 * @param line
+	 * @param line2
+	 * @return
+	 */
+	private boolean linesEqual(String line, String line2) {
+		String[] first = line.split("\\s+");
+		String[] second = line2.split("\\s+");
+		if (first.length != second.length) {
+			return false;
+		}
+		for(int i = 0; i < first.length; i++){
+			if(!first[i].trim().equals(second[i].trim())){
+				return false;
+			}
+		}
+		
+		return true;
+
 	}
 
 	public String getLine(int lineNumber) {
