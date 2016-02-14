@@ -96,6 +96,12 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 	public int getSelectedIndex() {
 		return lines.getSelectedIndex();
 	}
+	public void setSelectedIndex(int i){
+		if(i < 0 || i >= lines.getModel().getSize()){
+			return;
+		}
+		lines.setSelectedIndex(i);
+	}
 
 	public String getSelectedValue() {
 		return lines.getSelectedValue();
@@ -164,6 +170,11 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 			title.setToolTipText(file.getFilepath());
 			title.setText(file.getTitle());
 			fileLength.setText(String.valueOf(file.getLength()));
+		}else{
+			//if we haven't selected anything on the other side, select the same line
+			if (linkedPanel.getSelectedIndex() == -1){
+				linkedPanel.setSelectedIndex(getSelectedIndex());
+			}
 		}
 	}
 

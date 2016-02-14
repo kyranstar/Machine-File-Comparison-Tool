@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -101,6 +102,7 @@ public class GUI extends JPanel {
 	public static void main(String[] args) {
 		JFrame frame = new JFrame(TITLE);
 		frame.add(new GUI());
+		frame.setIconImage(new ImageIcon(GUI.class.getResource("/res/icon.gif")).getImage());
 		frame.pack();
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
