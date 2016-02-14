@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
+import javax.swing.ToolTipManager;
 
 import logic.FileLoader;
 
@@ -25,14 +26,19 @@ public class GUI extends JPanel {
 	private FileLoader fileLoader = new FileLoader();
 
 	public GUI() {
+		// set the delay before tooltips pop up
+		ToolTipManager.sharedInstance().setInitialDelay(200);
+		
 		// spaces are set as default so the title automatically has space in the
 		// layout
 		JLabel leftTitle = new JLabel(" ");
-		leftTitle.setToolTipText("No file loaded");
+		leftTitle.setToolTipText("No source file loaded");
 		JLabel rightTitle = new JLabel(" ");
-		rightTitle.setToolTipText("No file loaded");
+		rightTitle.setToolTipText("No target file loaded");
 		JLabel leftFileLength = new JLabel(" ");
+		leftFileLength.setToolTipText("Lines in file");
 		JLabel rightFileLength = new JLabel(" ");
+		rightFileLength.setToolTipText("Lines in file");
 
 		leftFile = new MachineFilePanel(fileLoader, leftTitle, leftFileLength);
 		rightFile = new MachineFilePanel(fileLoader, rightTitle, rightFileLength);
