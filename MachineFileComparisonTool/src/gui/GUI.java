@@ -29,7 +29,7 @@ public class GUI extends JPanel {
 	public GUI() {
 		// set the delay before tooltips pop up
 		ToolTipManager.sharedInstance().setInitialDelay(200);
-		
+
 		// spaces are set as default so the title automatically has space in the
 		// layout
 		JLabel leftTitle = new JLabel(" ");
@@ -52,7 +52,7 @@ public class GUI extends JPanel {
 		leftTitleFileLength.setResizeWeight(.9);
 		JSplitPane rightTitleFileLength = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, rightTitle, rightFileLength);
 		rightTitleFileLength.setResizeWeight(.9);
-		
+
 		JSplitPane leftTitleFileSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, leftTitleFileLength, leftFile);
 		JSplitPane rightTitleFileSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, rightTitleFileLength, rightFile);
 
@@ -68,7 +68,12 @@ public class GUI extends JPanel {
 		carryOverButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				rightFile.setValue(rightFile.getSelectedIndex(), leftFile.getSelectedValue());
+				//TODO handle multiple selections
+				int[] leftSelectedIndices = leftFile.getSelectedIndices();
+				int[] rightSelectedIndices = rightFile.getSelectedIndices();
+				for(int i = 0; i < leftSelectedIndices.length && i < rightSelectedIndices.length; i++){
+					rightFile.setValue(rightSelectedIndices[i], leftFile.getLine(leftSelectedIndices[i]));
+				}
 			}
 		});
 		final JButton saveButton = new JButton("Save");
@@ -92,9 +97,7 @@ public class GUI extends JPanel {
 		rightFile.getActionMap().put(DELETE_ACTION_MAP_KEY, new AbstractAction() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(rightFile.getSelectedIndex());
-				rightFile.removeLine(rightFile.getSelectedIndex());
-				System.out.println(rightFile.getSelectedIndex());
+				rightFile.deleteSelected();
 			}
 		});
 	}

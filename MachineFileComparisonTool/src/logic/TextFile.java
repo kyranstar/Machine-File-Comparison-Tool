@@ -11,7 +11,7 @@ public class TextFile {
 	public TextFile(File f, String[] contents) {
 		this.title = f.getName();
 		this.filepath = f.getAbsolutePath();
-		this.contents = contents;
+		this.contents = Arrays.copyOf(contents, contents.length);
 	}
 
 	public String getTitle() {

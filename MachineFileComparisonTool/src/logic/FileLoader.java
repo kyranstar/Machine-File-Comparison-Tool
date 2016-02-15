@@ -28,8 +28,7 @@ public class FileLoader {
 		if (file == null){
 			return null;
 		}
-		String[] lines = readLines(parent, file);
-		return new TextFile(file, lines);
+		return new TextFile(file, readLines(parent, file));
 	}
 	public void pickFileAndSave(String data, Component parent) {
 		File file = pickFile(parent);
