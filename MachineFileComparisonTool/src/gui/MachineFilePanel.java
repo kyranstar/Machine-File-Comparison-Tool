@@ -11,6 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.ListModel;
+import javax.swing.SwingUtilities;
 
 import logic.FileLoader;
 import logic.MachineFile;
@@ -36,7 +37,7 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 		this.fileLoader = loader;
 		this.title = title;
 		this.fileLength = fileLength;
-		
+
 		lines = new JList<>();
 		lines.setListData(new String[] { "Double click to load file" });
 		// file numbers in differentLines are highlighted red
@@ -96,8 +97,9 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 	public int getSelectedIndex() {
 		return lines.getSelectedIndex();
 	}
-	public void setSelectedIndex(int i){
-		if(i < 0 || i >= lines.getModel().getSize()){
+
+	public void setSelectedIndex(int i) {
+		if (i < 0 || i >= lines.getModel().getSize()) {
 			return;
 		}
 		lines.setSelectedIndex(i);
@@ -147,7 +149,8 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 
 		setContents(lineArr);
 		fileLength.setText(String.valueOf(lineArr.length));
-		if(selectedIndex < lineArr.length) lines.setSelectedIndex(selectedIndex);
+		if (selectedIndex < lineArr.length)
+			lines.setSelectedIndex(selectedIndex);
 	}
 
 	public String getFullText() {
@@ -161,7 +164,10 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if (e.getClickCount() >= 2) {
+		if (SwingUtilities.isRightMouseButton(e)) {
+			lines.clearSelection();
+			linkedPanel.lines.clearSelection();
+		} else if (e.getClickCount() >= 2) {
 			TextFile file = fileLoader.pickFileAndGetLines(this);
 			if (file == null || file.getContents() == null || file.getTitle() == null) {
 				return;
@@ -170,9 +176,10 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 			title.setToolTipText(file.getFilepath());
 			title.setText(file.getTitle());
 			fileLength.setText(String.valueOf(file.getLength()));
-		}else{
-			//if we haven't selected anything on the other side, select the same line
-			if (linkedPanel.getSelectedIndex() == -1){
+		} else {
+			// if we haven't selected anything on the other side, select the
+			// same line
+			if (linkedPanel.getSelectedIndex() == -1) {
 				linkedPanel.setSelectedIndex(getSelectedIndex());
 			}
 		}
