@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -11,6 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
@@ -22,6 +24,8 @@ import logic.FileLoader;
 public class GUI extends JPanel {
 	private static final String DELETE_ACTION_MAP_KEY = "delete";
 	public static final String TITLE = "Machine File Comparison Tool";
+	protected static final String VERSION_NUMBER = "1.0";
+	private static Image icon = new ImageIcon(GUI.class.getResource("/res/icon.gif")).getImage();
 	private MachineFilePanel leftFile;
 	private MachineFilePanel rightFile;
 	private FileLoader fileLoader = new FileLoader();
@@ -64,11 +68,18 @@ public class GUI extends JPanel {
 	}
 
 	private JPanel createToolbar() {
+		JButton aboutButton = new JButton("About");
+		aboutButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(GUI.this, "Developed by Kyran Adams, Student of Tesla STEM\nVersion " + VERSION_NUMBER, "About", JOptionPane.OK_OPTION,  new ImageIcon(icon));
+			}
+		});
+		
 		JButton carryOverButton = new JButton("Carry over");
 		carryOverButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//TODO handle multiple selections
 				int[] leftSelectedIndices = leftFile.getSelectedIndices();
 				int[] rightSelectedIndices = rightFile.getSelectedIndices();
 				for(int i = 0; i < leftSelectedIndices.length && i < rightSelectedIndices.length; i++){
@@ -83,8 +94,9 @@ public class GUI extends JPanel {
 				fileLoader.pickFileAndSave(rightFile.getFullText(), saveButton);
 			}
 		});
-		JPanel toolbar = new JPanel();
+		final JPanel toolbar = new JPanel();
 		toolbar.setLayout(new BorderLayout());
+		toolbar.add(BorderLayout.WEST, aboutButton);
 		toolbar.add(BorderLayout.CENTER, carryOverButton);
 		toolbar.add(BorderLayout.EAST, saveButton);
 		return toolbar;
@@ -105,7 +117,7 @@ public class GUI extends JPanel {
 	public static void main(String[] args) {
 		JFrame frame = new JFrame(TITLE);
 		frame.add(new GUI());
-		frame.setIconImage(new ImageIcon(GUI.class.getResource("/res/icon.gif")).getImage());
+		frame.setIconImage(GUI.icon );
 		frame.pack();
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
