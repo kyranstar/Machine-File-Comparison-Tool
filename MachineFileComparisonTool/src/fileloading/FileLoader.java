@@ -1,4 +1,4 @@
-package logic;
+package fileloading;
 
 import java.awt.Component;
 import java.io.File;
@@ -20,16 +20,28 @@ import javax.swing.JOptionPane;
  */
 public class FileLoader {
 	private static final String DEFAULT_LOCATION = "C:\\AH700";
-	
+
 	private File lastLocation = new File(DEFAULT_LOCATION);
 
+	/**
+	 * Opens a file chooser, and returns the file picked. Null if nothing is picked.
+	 * @param parent
+	 * @return
+	 */
 	public TextFile pickFileAndGetLines(Component parent) {
 		File file = pickFile(parent);
-		if (file == null){
+		if (file == null) {
 			return null;
 		}
-		return new TextFile(file, readLines(parent, file));
+		try {
+			return new TextFile(file, readLines(file));
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(parent, "Error opening file");
+			e.printStackTrace();
+			return null;
+		}
 	}
+
 	public void pickFileAndSave(String data, Component parent) {
 		File file = pickFile(parent);
 		if (file == null)
@@ -59,22 +71,17 @@ public class FileLoader {
 		}
 	}
 
-	private String[] readLines(Component parent, File file) {
-		try {
-			// read lines from file
-			Stream<String> fileLines = Files.readAllLines(file.toPath()).stream();
+	private String[] readLines(File file) throws IOException {
+		// read lines from file
+		Stream<String> fileLines = Files.readAllLines(file.toPath()).stream();
 
-			// convert to array
-			return fileLines.toArray(new IntFunction<String[]>() {
-				@Override
-				public String[] apply(int size) {
-					return new String[size];
-				}
-			});
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(parent, "Error opening file");
-			e.printStackTrace();
-			return null;
-		}
+		// convert to array
+		return fileLines.toArray(new IntFunction<String[]>() {
+			@Override
+			public String[] apply(int size) {
+				return new String[size];
+			}
+		});
+
 	}
 }

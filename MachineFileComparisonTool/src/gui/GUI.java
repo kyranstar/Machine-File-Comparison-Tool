@@ -18,7 +18,7 @@ import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.ToolTipManager;
 
-import logic.FileLoader;
+import fileloading.FileLoader;
 
 @SuppressWarnings("serial")
 public class GUI extends JPanel {
@@ -80,10 +80,10 @@ public class GUI extends JPanel {
 		carryOverButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int[] leftSelectedIndices = leftFile.getSelectedIndices();
-				int[] rightSelectedIndices = rightFile.getSelectedIndices();
+				int[] leftSelectedIndices = leftFile.getLines().getSelectedIndices();
+				int[] rightSelectedIndices = rightFile.getLines().getSelectedIndices();
 				for(int i = 0; i < leftSelectedIndices.length && i < rightSelectedIndices.length; i++){
-					rightFile.setValue(rightSelectedIndices[i], leftFile.getLine(leftSelectedIndices[i]));
+					rightFile.setValue(rightSelectedIndices[i], leftFile.getLines().getElement(leftSelectedIndices[i]));
 				}
 			}
 		});

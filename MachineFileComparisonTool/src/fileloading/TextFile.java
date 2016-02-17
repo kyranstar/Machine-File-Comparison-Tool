@@ -1,4 +1,4 @@
-package logic;
+package fileloading;
 
 import java.io.File;
 import java.util.Arrays;

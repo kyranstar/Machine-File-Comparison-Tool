@@ -1,30 +1,25 @@
 package gui;
 
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
-import logic.FileLoader;
-import logic.TextFile;
+import fileloading.FileLoader;
+import fileloading.TextFile;
 
 @SuppressWarnings("serial")
 public class MachineFilePanel extends JScrollPane implements MouseListener {
-	private JList<String> lines;
+	private MachineFile lines;
 	private FileLoader fileLoader;
 	// the panel to compare with
 	private MachineFilePanel linkedPanel;
 
-	private List<Integer> differentLines;
+	List<Integer> differentLines;
 	// change this title whenever loading a file
 	private JLabel title;
 	// change this title whenever file length changes
@@ -36,40 +31,18 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 		this.title = title;
 		this.fileLength = fileLength;
 
-		lines = new JList<>();
-		DefaultListModel<String> defaultListModel = new DefaultListModel<String>();
-		defaultListModel.addElement("Double click to load file");
-		lines.setModel(defaultListModel);
-		// file numbers in differentLines are highlighted red
-		lines.setCellRenderer(new DefaultListCellRenderer() {
+		lines = new MachineFile(this);
 
-			@Override
-			public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
-					boolean cellHasFocus) {
-
-				super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-				if (differentLines != null && differentLines.contains(index)) {
-					if (isSelected) {
-						setBackground(Color.ORANGE);
-					} else {
-						setBackground(Color.RED);
-					}
-				}
-
-				return this;
-			}
-		});
 		addMouseListener(this);
-		lines.addMouseListener(this);
 		getViewport().add(lines);
-	}
-
-	public String getLine(int i) {
-		return getModel().getElementAt(i);
 	}
 
 	public void setLinkedPanel(MachineFilePanel linkedPanel) {
 		this.linkedPanel = linkedPanel;
+	}
+
+	public MachineFile getLines() {
+		return lines;
 	}
 
 	/**
@@ -89,31 +62,13 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 		fileLength.setText(String.valueOf(linesArr.length));
 	}
 
-	/**
-	 * Updates the comparison data with the linked panel
-	 */
-	private void updateCompare() {
-		if (linkedPanel == null)
-			return;
-
-		differentLines = getDifferentLines();
-		repaint();
-
-		linkedPanel.differentLines = linkedPanel.getDifferentLines();
-		linkedPanel.repaint();
-	}
-
-	public int[] getSelectedIndices() {
-		return lines.getSelectedIndices();
-	}
-
 	public void deleteSelected() {
-		if (lines.getSelectedIndices().length > 0) {
-			int[] tmp = lines.getSelectedIndices();
-			int[] selectedIndices = lines.getSelectedIndices();
+		if (getLines().getSelectedIndices().length > 0) {
+			int[] tmp = getLines().getSelectedIndices();
+			int[] selectedIndices = getLines().getSelectedIndices();
 
 			for (int i = tmp.length - 1; i >= 0; i--) {
-				selectedIndices = lines.getSelectedIndices();
+				selectedIndices = getLines().getSelectedIndices();
 				System.out.println("Removing: " + selectedIndices[i]);
 				getModel().remove(selectedIndices[i]);
 			}
@@ -126,13 +81,25 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 		updateCompare();
 	}
 
+	/**
+	 * Updates the comparison data with the linked panel
+	 */
+	private void updateCompare() {
+		if (linkedPanel == null)
+			return;
+
+		linkedPanel.differentLines = differentLines = getLines().calculateDifferentLines(linkedPanel.getLines());
+		repaint();
+		linkedPanel.repaint();
+	}
+
 	private DefaultListModel<String> getModel() {
-		return ((DefaultListModel<String>) lines.getModel());
+		return ((DefaultListModel<String>) getLines().getModel());
 	}
 
 	public String getFullText() {
 		StringBuilder text = new StringBuilder();
-		for (int i = 0; i < getLineCount(); i++) {
+		for (int i = 0; i < getModel().size(); i++) {
 			text.append(getModel().getElementAt(i)).append('\n');
 		}
 		return text.toString();
@@ -141,24 +108,32 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if (SwingUtilities.isRightMouseButton(e)) {
-			lines.clearSelection();
-			linkedPanel.lines.clearSelection();
+			getLines().clearSelection();
+			linkedPanel.getLines().clearSelection();
 		} else if (e.getClickCount() >= 2) {
-			TextFile file = fileLoader.pickFileAndGetLines(this);
-			if (file == null || file.getContents() == null || file.getTitle() == null) {
-				return;
-			}
-			setContents(file.getContents());
-			title.setToolTipText(file.getFilepath());
-			title.setText(file.getTitle());
-			fileLength.setText(String.valueOf(file.getLength()));
+			askForAndLoadFile();
 		} else {
 			// if we haven't selected anything on the other side, select the
 			// same lines
-			if (linkedPanel.lines.getSelectedIndices().length == 0) {
-				linkedPanel.lines.setSelectedIndices(lines.getSelectedIndices());
+			if (linkedPanel.getLines().getSelectedIndices().length == 0) {
+				linkedPanel.getLines().setSelectedIndices(getLines().getSelectedIndices());
 			}
 		}
+	}
+
+	/**
+	 * Picks a file using {@link FileLoader} and then loads that file into this
+	 * panel.
+	 */
+	private void askForAndLoadFile() {
+		TextFile file = fileLoader.pickFileAndGetLines(this);
+		if (file == null || file.getContents() == null || file.getTitle() == null) {
+			return;
+		}
+		setContents(file.getContents());
+		title.setToolTipText(file.getFilepath());
+		title.setText(file.getTitle());
+		fileLength.setText(String.valueOf(file.getLength()));
 	}
 
 	@Override
@@ -178,59 +153,6 @@ public class MachineFilePanel extends JScrollPane implements MouseListener {
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-
-	}
-
-	/**
-	 * Gives a list of lines with the same index that do not satisfy linesEqual
-	 * between this panel and the linkedPanel
-	 * 
-	 * @return
-	 */
-	public List<Integer> getDifferentLines() {
-		List<Integer> differentLines = new ArrayList<>();
-		int end = Math.min(getLineCount(), linkedPanel.getLineCount());
-		for (int i = 0; i < end; i++) {
-			if (!linesEqual(getLine(i), linkedPanel.getLine(i))) {
-				differentLines.add(i);
-			}
-		}
-		// add unmatched lines
-		for (int i = end; i < getLineCount(); i++) {
-			differentLines.add(i);
-		}
-		for (int i = end; i < linkedPanel.getLineCount(); i++) {
-			differentLines.add(i);
-		}
-
-		return differentLines;
-	}
-
-	private int getLineCount() {
-		return getModel().getSize();
-	}
-
-	/**
-	 * Checks whether two lines are "equal." It must account for slightly
-	 * different spacing.
-	 * 
-	 * @param line
-	 * @param line2
-	 * @return
-	 */
-	private final static boolean linesEqual(String line, String line2) {
-		String[] first = line.split("\\s+");
-		String[] second = line2.split("\\s+");
-		if (first.length != second.length) {
-			return false;
-		}
-		for (int i = 0; i < first.length; i++) {
-			if (!first[i].trim().equals(second[i].trim())) {
-				return false;
-			}
-		}
-
-		return true;
 
 	}
 
