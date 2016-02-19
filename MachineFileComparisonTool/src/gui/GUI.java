@@ -5,6 +5,8 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.util.Arrays;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -72,17 +74,19 @@ public class GUI extends JPanel {
 		aboutButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(GUI.this, "Developed by Kyran Adams, Student of Tesla STEM\nVersion " + VERSION_NUMBER, "About", JOptionPane.OK_OPTION,  new ImageIcon(icon));
+				JOptionPane.showMessageDialog(GUI.this,
+						"Developed by Kyran Adams, Student of Tesla STEM\nVersion " + VERSION_NUMBER, "About",
+						JOptionPane.OK_OPTION, new ImageIcon(icon));
 			}
 		});
-		
+
 		JButton carryOverButton = new JButton("Carry over");
 		carryOverButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int[] leftSelectedIndices = leftFile.getLines().getSelectedIndices();
 				int[] rightSelectedIndices = rightFile.getLines().getSelectedIndices();
-				for(int i = 0; i < leftSelectedIndices.length && i < rightSelectedIndices.length; i++){
+				for (int i = 0; i < leftSelectedIndices.length && i < rightSelectedIndices.length; i++) {
 					rightFile.setValue(rightSelectedIndices[i], leftFile.getLines().getElement(leftSelectedIndices[i]));
 				}
 			}
@@ -117,10 +121,20 @@ public class GUI extends JPanel {
 	public static void main(String[] args) {
 		JFrame frame = new JFrame(TITLE);
 		frame.add(new GUI());
-		frame.setIconImage(GUI.icon );
+		setIconImages(frame);
 		frame.pack();
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+
+	private static void setIconImages(JFrame frame) {
+		// on windows 7, icon on upper right of app must be 16x16, while the
+		// icon on the taskbar at the bottom must be 32x32 according to
+		// http://stackoverflow.com/questions/15004874/use-different-icons-in-jframe-and-windows-taskbar
+		BufferedImage upperLeftIcon = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+		Image scaledTaskbarIcon = GUI.icon.getScaledInstance(32, 32, BufferedImage.SCALE_SMOOTH);
+		
+		frame.setIconImages(Arrays.asList(upperLeftIcon, scaledTaskbarIcon));
 	}
 
 }
